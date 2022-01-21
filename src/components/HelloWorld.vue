@@ -145,9 +145,6 @@
 
       result: null
     }),
-    mounted() {
-      this.generateHash();
-    },
 
     methods: {
       async directCheckout() {
