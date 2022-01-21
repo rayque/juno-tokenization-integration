@@ -91,6 +91,13 @@
           >
             set data fake
           </v-btn>
+          <v-btn
+              color="orange"
+              class="mr-4"
+              @click="clearForm"
+          >
+            Clear form
+          </v-btn>
         </v-form>
       </v-col>
     </v-row>
@@ -182,7 +189,16 @@
         this.securityCode = "173";
         this.expirationMonth = "12";
         this.expirationYear = "2025";
+      },
+
+      clearForm() {
+        this.cardNumber = "";
+        this.holderName = "";
+        this.securityCode = "";
+        this.expirationMonth = "";
+        this.expirationYear = "";
       }
+
     }
   }
 </script>
