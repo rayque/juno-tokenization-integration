@@ -54,7 +54,46 @@ export default {
   },
 
   data: () => ({
-    //
+    cardData: {
+      cardNumber: "5272579617351336",
+      holderName: "rasmus lerdorf",
+      securityCode: "173",
+      expirationMonth: "12",
+      expirationYear: "2025",
+    },
   }),
+  mounted() {
+    this.generateHash();
+  },
+
+  methods: {
+    async directCheckout() {
+      await this.$loadScript(process.env.VUE_APP_JUNO_PUBLIC_URL_CHECKOUT);
+      const junoPublicToken = process.env.VUE_APP_JUNO_PUBLIC_TOKEN;
+
+      if (process.env.VUE_APP_JUNO_ENVIROMENT === "sandbox") {
+        // eslint-disable-next-line
+        return new DirectCheckout(junoPublicToken, false);
+      }
+      // eslint-disable-next-line
+      return new DirectCheckout(junoPublicToken);
+    },
+
+    async generateHash() {
+      const checkout = await this.directCheckout();
+      // eslint-disable-next-line
+      const cardData = this.cardData;
+      checkout.getCardHash(
+          this.cardData,
+          (cardHash) => {
+            // eslint-disable-next-line
+            console.log(cardHash);
+          },
+          (error) => {
+            console.error(error.message);
+          }
+      );
+    },
+  }
 };
 </script>
