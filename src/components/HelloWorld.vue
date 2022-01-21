@@ -1,91 +1,109 @@
 <template>
   <v-container>
     <v-row class="text-center">
-      <v-col cols="12">
-        <v-img
-          :src="require('../assets/logo.svg')"
-          class="my-3"
-          contain
-          height="200"
-        />
-      </v-col>
 
       <v-col class="mb-4">
-        <h1 class="display-2 font-weight-bold mb-3">
-          Welcome to Vuetify
-        </h1>
 
-        <p class="subheading font-weight-regular">
-          For help and collaboration with other Vuetify developers,
-          <br>please join our online
-          <a
-            href="https://community.vuetifyjs.com"
-            target="_blank"
-          >Discord Community</a>
-        </p>
-      </v-col>
+        <v-form v-model="valid">
+          <v-container>
+            <v-row>
 
-      <v-col
-        class="mb-5"
-        cols="12"
-      >
-        <h2 class="headline font-weight-bold mb-3">
-          What's next?
-        </h2>
+              <v-col
+                  cols="12"
+                  md="4"
+              >
+                <v-text-field
+                    v-model="cardNumber"
+                    :rules="required"
+                    label="Card Number"
+                    required
+                ></v-text-field>
+              </v-col>
 
-        <v-row justify="center">
-          <a
-            v-for="(next, i) in whatsNext"
-            :key="i"
-            :href="next.href"
-            class="subheading mx-3"
-            target="_blank"
+              <v-col
+                  cols="12"
+                  md="4"
+              >
+                <v-text-field
+                    v-model="holderName"
+                    :rules="required"
+                    label="Holder Name"
+                    required
+                ></v-text-field>
+              </v-col>
+
+              <v-col
+                  cols="12"
+                  md="4"
+              >
+                <v-text-field
+                    v-model="securityCode"
+                    :rules="required"
+                    label="CVV"
+                    required
+                ></v-text-field>
+              </v-col>
+
+
+              <v-col
+                  cols="12"
+                  md="6"
+              >
+                <v-text-field
+                    v-model="expirationMonth"
+                    :rules="required"
+                    label="Expiration month"
+                    required
+                    :counter="2"
+                ></v-text-field>
+              </v-col>
+
+
+
+              <v-col
+                  cols="12"
+                  md="6"
+              >
+                <v-text-field
+                    v-model="expirationYear"
+                    :rules="required"
+                    label="Expiration Year"
+                    required
+                    :counter="4"
+                ></v-text-field>
+              </v-col>
+            </v-row>
+          </v-container>
+
+          <v-btn
+              :disabled="!valid"
+              color="success"
+              class="mr-4"
+              :loading="loading"
+              @click="generateHash"
           >
-            {{ next.text }}
-          </a>
-        </v-row>
-      </v-col>
-
-      <v-col
-        class="mb-5"
-        cols="12"
-      >
-        <h2 class="headline font-weight-bold mb-3">
-          Important Links
-        </h2>
-
-        <v-row justify="center">
-          <a
-            v-for="(link, i) in importantLinks"
-            :key="i"
-            :href="link.href"
-            class="subheading mx-3"
-            target="_blank"
+            get hash
+          </v-btn>
+          <v-btn
+              color="primary"
+              class="mr-4"
+              @click="setFakeData"
           >
-            {{ link.text }}
-          </a>
-        </v-row>
+            set data fake
+          </v-btn>
+        </v-form>
       </v-col>
+    </v-row>
 
+    <v-row class="text-center">
       <v-col
-        class="mb-5"
-        cols="12"
-      >
-        <h2 class="headline font-weight-bold mb-3">
-          Ecosystem
-        </h2>
+          cols="12"
+          md="12"
+          style="background: #eeeeee "
 
-        <v-row justify="center">
-          <a
-            v-for="(eco, i) in ecosystem"
-            :key="i"
-            :href="eco.href"
-            class="subheading mx-3"
-            target="_blank"
-          >
-            {{ eco.text }}
-          </a>
-        </v-row>
+      >
+         <h3>Result</h3>
+        {{ result }}
       </v-col>
     </v-row>
   </v-container>
@@ -96,56 +114,75 @@
     name: 'HelloWorld',
 
     data: () => ({
-      ecosystem: [
-        {
-          text: 'vuetify-loader',
-          href: 'https://github.com/vuetifyjs/vuetify-loader',
-        },
-        {
-          text: 'github',
-          href: 'https://github.com/vuetifyjs/vuetify',
-        },
-        {
-          text: 'awesome-vuetify',
-          href: 'https://github.com/vuetifyjs/awesome-vuetify',
-        },
+      cardData: {
+        cardNumber: "5272579617351336",
+        holderName: "rasmus lerdorf",
+        securityCode: "173",
+        expirationMonth: "12",
+        expirationYear: "2025",
+      },
+
+      cardNumber: "",
+      holderName: "",
+      securityCode: "",
+      expirationMonth: "",
+      expirationYear: "",
+
+      valid: false,
+      loading: false,
+      firstname: '',
+      lastname: '',
+      required: [
+        v => !!v || 'Name is required',
       ],
-      importantLinks: [
-        {
-          text: 'Documentation',
-          href: 'https://vuetifyjs.com',
-        },
-        {
-          text: 'Chat',
-          href: 'https://community.vuetifyjs.com',
-        },
-        {
-          text: 'Made with Vuetify',
-          href: 'https://madewithvuejs.com/vuetify',
-        },
-        {
-          text: 'Twitter',
-          href: 'https://twitter.com/vuetifyjs',
-        },
-        {
-          text: 'Articles',
-          href: 'https://medium.com/vuetify',
-        },
-      ],
-      whatsNext: [
-        {
-          text: 'Explore components',
-          href: 'https://vuetifyjs.com/components/api-explorer',
-        },
-        {
-          text: 'Select a layout',
-          href: 'https://vuetifyjs.com/getting-started/pre-made-layouts',
-        },
-        {
-          text: 'Frequently Asked Questions',
-          href: 'https://vuetifyjs.com/getting-started/frequently-asked-questions',
-        },
-      ],
+
+      result: null
     }),
+    mounted() {
+      this.generateHash();
+    },
+
+    methods: {
+      async directCheckout() {
+        await this.$loadScript(process.env.VUE_APP_JUNO_PUBLIC_URL_CHECKOUT);
+        const junoPublicToken = process.env.VUE_APP_JUNO_PUBLIC_TOKEN;
+
+        if (process.env.VUE_APP_JUNO_ENVIROMENT === "sandbox") {
+          // eslint-disable-next-line
+          return new DirectCheckout(junoPublicToken, false);
+        }
+        // eslint-disable-next-line
+        return new DirectCheckout(junoPublicToken);
+      },
+
+      async generateHash() {
+        this.loading = true;
+        this.result = null;
+
+        const checkout = await this.directCheckout();
+        checkout.getCardHash(
+            this.cardData,
+            (cardHash) => {
+              this.loading = false;
+              this.result = cardHash;
+              // eslint-disable-next-line
+              console.log(cardHash);
+            },
+            (error) => {
+              this.loading = false;
+              this.result = error;
+              console.error(error.message);
+            }
+        );
+      },
+
+      setFakeData() {
+        this.cardNumber = "5272579617351336";
+        this.holderName = "Rasmus Lerdorf";
+        this.securityCode = "173";
+        this.expirationMonth = "12";
+        this.expirationYear = "2025";
+      }
+    }
   }
 </script>
