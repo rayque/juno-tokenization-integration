@@ -2,6 +2,7 @@ import Vue from 'vue'
 import App from './App.vue'
 import vuetify from './plugins/vuetify'
 import "./plugins/vue-plugin-load-script"
+import "./plugins/clipboard"
 
 Vue.config.productionTip = false
 

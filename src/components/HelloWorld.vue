@@ -59,7 +59,6 @@
               </v-col>
 
 
-
               <v-col
                   cols="12"
                   md="6"
@@ -103,99 +102,143 @@
     </v-row>
 
     <v-row class="text-center">
-      <v-col
-          cols="12"
-          md="12"
-          style="background: #eeeeee "
+      <v-col >
+        <v-card
+            elevation="5"
+            class="grey lighten-4 pa-5"
+        >
+        <h3 class="mb-5">Result</h3>
+        <v-tooltip
+            top
+            v-model="showTooltipClipboard"
+            :disabled="!showTooltipClipboard"
+        >
+          <template v-slot:activator="{ on, attrs }">
+        <span
+            v-bind="attrs"
+            v-on="on"
+        >
+            <v-btn
+                color="success"
+                title="Copy hash"
+                v-if="result"
+                v-clipboard:copy="result"
+                v-clipboard:success="onCopy"
+                v-clipboard:error="onError"
+            >
+              <span class="mr-2">{{ result }}</span>
+              <v-icon>
+                mdi-content-copy
+              </v-icon>
+            </v-btn>
+          </span>
+          </template>
+          <span>{{ copyMessage }}</span>
+        </v-tooltip>
 
-      >
-         <h3>Result</h3>
-        {{ result }}
+        </v-card>
       </v-col>
     </v-row>
   </v-container>
 </template>
 
 <script>
-  export default {
-    name: 'HelloWorld',
+export default {
+  name: 'HelloWorld',
 
-    data: () => ({
-      cardData: {
-        cardNumber: "5272579617351336",
-        holderName: "rasmus lerdorf",
-        securityCode: "173",
-        expirationMonth: "12",
-        expirationYear: "2025",
-      },
+  data: () => ({
+    copyMessage: '',
+    showTooltipClipboard: false,
+    cardData: {
+      cardNumber: "5272579617351336",
+      holderName: "rasmus lerdorf",
+      securityCode: "173",
+      expirationMonth: "12",
+      expirationYear: "2025",
+    },
 
-      cardNumber: "",
-      holderName: "",
-      securityCode: "",
-      expirationMonth: "",
-      expirationYear: "",
+    cardNumber: "",
+    holderName: "",
+    securityCode: "",
+    expirationMonth: "",
+    expirationYear: "",
 
-      valid: false,
-      loading: false,
-      firstname: '',
-      lastname: '',
-      required: [
-        v => !!v || 'Name is required',
-      ],
+    valid: false,
+    loading: false,
+    firstname: '',
+    lastname: '',
+    required: [
+      v => !!v || 'Name is required',
+    ],
 
-      result: null
-    }),
+    result: null
+  }),
+  mounted() {
+    this.setFakeData();
+  },
+  methods: {
+    onCopy: function () {
+      this.showTooltipClipboard = !this.showTooltipClipboard;
+      this.copyMessage = "copied to clipboard";
+      this.$copyText(this.result).then(function (e) {
+      }, function (e) {
+        alert('Can not copy')
+      })
+    },
+    onError: function (e) {
+      this.copyMessage = "Failed to copy texts";
+    },
 
-    methods: {
-      async directCheckout() {
-        await this.$loadScript(process.env.VUE_APP_JUNO_PUBLIC_URL_CHECKOUT);
-        const junoPublicToken = process.env.VUE_APP_JUNO_PUBLIC_TOKEN;
+    async directCheckout() {
+      await this.$loadScript(process.env.VUE_APP_JUNO_PUBLIC_URL_CHECKOUT);
+      const junoPublicToken = process.env.VUE_APP_JUNO_PUBLIC_TOKEN;
 
-        if (process.env.VUE_APP_JUNO_ENVIROMENT === "sandbox") {
-          // eslint-disable-next-line
-          return new DirectCheckout(junoPublicToken, false);
-        }
+      if (process.env.VUE_APP_JUNO_ENVIROMENT === "sandbox") {
         // eslint-disable-next-line
-        return new DirectCheckout(junoPublicToken);
-      },
-
-      async generateHash() {
-        this.loading = true;
-        this.result = null;
-
-        const checkout = await this.directCheckout();
-        checkout.getCardHash(
-            this.cardData,
-            (cardHash) => {
-              this.loading = false;
-              this.result = cardHash;
-              // eslint-disable-next-line
-              console.log(cardHash);
-            },
-            (error) => {
-              this.loading = false;
-              this.result = error;
-              console.error(error.message);
-            }
-        );
-      },
-
-      setFakeData() {
-        this.cardNumber = "5272579617351336";
-        this.holderName = "Rasmus Lerdorf";
-        this.securityCode = "173";
-        this.expirationMonth = "12";
-        this.expirationYear = "2025";
-      },
-
-      clearForm() {
-        this.cardNumber = "";
-        this.holderName = "";
-        this.securityCode = "";
-        this.expirationMonth = "";
-        this.expirationYear = "";
+        return new DirectCheckout(junoPublicToken, false);
       }
+      // eslint-disable-next-line
+      return new DirectCheckout(junoPublicToken);
+    },
 
+    async generateHash() {
+      this.loading = true;
+      this.result = null;
+
+      const checkout = await this.directCheckout();
+      checkout.getCardHash(
+          this.cardData,
+          (cardHash) => {
+            this.loading = false;
+            this.result = cardHash;
+            // eslint-disable-next-line
+            console.log(cardHash);
+            this.onCopy();
+          },
+          (error) => {
+            this.loading = false;
+            this.result = error;
+            console.error(error.message);
+          }
+      );
+    },
+
+    setFakeData() {
+      this.cardNumber = "5272579617351336";
+      this.holderName = "Rasmus Lerdorf";
+      this.securityCode = "173";
+      this.expirationMonth = "12";
+      this.expirationYear = "2025";
+    },
+
+    clearForm() {
+      this.cardNumber = "";
+      this.holderName = "";
+      this.securityCode = "";
+      this.expirationMonth = "";
+      this.expirationYear = "";
     }
+
   }
+}
 </script>
